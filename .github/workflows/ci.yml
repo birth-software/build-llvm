@@ -5,12 +5,100 @@ on:
 -   pull_request
 
 jobs:
-    windowsBuild:
-        name: Windows Build
-        runs-on: windows-latest
+    linux:
+        name: Linux Build
+        runs-on: ubuntu-24.04
         env:
-            LLVM_VERSION: 18.1.8
-            LLVM_MAJOR_VERSION: 18
+            LLVM_VERSION: 19.1.2
+            LLVM_MAJOR_VERSION: 19
+
+        # strategy:
+        #     fail-fast: false
+        #     matrix:
+        #         CRT:
+        #         -   msvcrt
+        #         -   libcmt
+        #
+        #         TARGET_CPU:
+        #         -   amd64
+        #
+        #         CONFIGURATION:
+        #         -   Debug
+        #         -   Release
+
+        steps:
+        -   name: Checkout repo
+            uses: actions/checkout@v4
+
+        # -   name: Install
+        #     shell: cmd
+        #     run: |
+        #         call %GITHUB_WORKSPACE%\set-env.bat msvc17 ${{matrix.CRT}} ${{matrix.TARGET_CPU}} ${{matrix.CONFIGURATION}}
+        #         call %GITHUB_WORKSPACE%\install.bat
+        #
+        # -   name: Build and test
+        #     id: BUILD
+        #     shell: cmd
+        #     run: |
+        #         call %GITHUB_WORKSPACE%\set-env.bat msvc17 ${{matrix.CRT}} ${{matrix.TARGET_CPU}} ${{matrix.CONFIGURATION}}
+        #         call %GITHUB_WORKSPACE%\build.bat
+        #         echo ::set-output name=DEPLOY_FILE::%DEPLOY_FILE%
+        #
+        # -   name: Release
+        #     uses: softprops/action-gh-release@v2
+        #     if: startsWith(github.ref, 'refs/tags/')
+        #     with:
+        #         files: ${{steps.BUILD.outputs.DEPLOY_FILE}}
+    macos:
+        name: MacOS Build
+        runs-on: macos-15
+        env:
+            LLVM_VERSION: 19.1.2
+            LLVM_MAJOR_VERSION: 19
+
+        # strategy:
+        #     fail-fast: false
+        #     matrix:
+        #         CRT:
+        #         -   msvcrt
+        #         -   libcmt
+        #
+        #         TARGET_CPU:
+        #         -   amd64
+        #
+        #         CONFIGURATION:
+        #         -   Debug
+        #         -   Release
+
+        steps:
+        -   name: Checkout repo
+            uses: actions/checkout@v4
+
+        # -   name: Install
+        #     shell: cmd
+        #     run: |
+        #         call %GITHUB_WORKSPACE%\set-env.bat msvc17 ${{matrix.CRT}} ${{matrix.TARGET_CPU}} ${{matrix.CONFIGURATION}}
+        #         call %GITHUB_WORKSPACE%\install.bat
+        #
+        # -   name: Build and test
+        #     id: BUILD
+        #     shell: cmd
+        #     run: |
+        #         call %GITHUB_WORKSPACE%\set-env.bat msvc17 ${{matrix.CRT}} ${{matrix.TARGET_CPU}} ${{matrix.CONFIGURATION}}
+        #         call %GITHUB_WORKSPACE%\build.bat
+        #         echo ::set-output name=DEPLOY_FILE::%DEPLOY_FILE%
+        #
+        # -   name: Release
+        #     uses: softprops/action-gh-release@v2
+        #     if: startsWith(github.ref, 'refs/tags/')
+        #     with:
+        #         files: ${{steps.BUILD.outputs.DEPLOY_FILE}}
+    windows:
+        name: Windows Build
+        runs-on: windows-2022
+        env:
+            LLVM_VERSION: 19.1.2
+            LLVM_MAJOR_VERSION: 19
 
         strategy:
             fail-fast: false
@@ -28,7 +116,7 @@ jobs:
 
         steps:
         -   name: Checkout repo
-            uses: actions/checkout@v2
+            uses: actions/checkout@v4
 
         -   name: Install
             shell: cmd
@@ -45,7 +133,7 @@ jobs:
                 echo ::set-output name=DEPLOY_FILE::%DEPLOY_FILE%
 
         -   name: Release
-            uses: softprops/action-gh-release@v1
+            uses: softprops/action-gh-release@v2
             if: startsWith(github.ref, 'refs/tags/')
             with:
                 files: ${{steps.BUILD.outputs.DEPLOY_FILE}}
