@@ -4,14 +4,14 @@ on:
 -   push
 -   pull_request
 
+env:
+  LLVM_VERSION: 19.1.2
+  LLVM_MAJOR_VERSION: 19
+
 jobs:
     linux:
         name: Linux Build
         runs-on: ubuntu-24.04
-        env:
-            LLVM_VERSION: 19.1.2
-            LLVM_MAJOR_VERSION: 19
-
         # strategy:
         #     fail-fast: false
         #     matrix:
@@ -52,9 +52,6 @@ jobs:
     macos:
         name: MacOS Build
         runs-on: macos-15
-        env:
-            LLVM_VERSION: 19.1.2
-            LLVM_MAJOR_VERSION: 19
 
         # strategy:
         #     fail-fast: false
@@ -96,9 +93,7 @@ jobs:
     windows:
         name: Windows Build
         runs-on: windows-2022
-        env:
-            LLVM_VERSION: 19.1.2
-            LLVM_MAJOR_VERSION: 19
+        permissions: write-all
 
         strategy:
             fail-fast: false
@@ -135,5 +130,7 @@ jobs:
         -   name: Release
             uses: softprops/action-gh-release@v2
             if: startsWith(github.ref, 'refs/tags/')
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             with:
                 files: ${{steps.BUILD.outputs.DEPLOY_FILE}}
